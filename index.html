@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            margin: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000;
+            font-size: 24px;
+            text-align: center;
+            line-height: 100px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="board" id="board"></div>
+<div class="message" id="message"></div>
+
+<script>
+    // Game board initialization
+    const boardElement = document.getElementById('board');
+    const messageElement = document.getElementById('message');
+    let currentPlayer = 'X';
+    let gameOver = false;
+
+    // Creating cells on the game board
+    for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = i;
+        cell.addEventListener('click', () => cellClickHandler(cell));
+        boardElement.appendChild(cell);
+    }
+
+    // Click handler for cells
+    function cellClickHandler(cell) {
+        if (gameOver) return;
+
+        if (cell.textContent === '') {
+            cell.textContent = currentPlayer;
+            if (checkWinner()) {
+                gameOver = true;
+                messageElement.textContent = `Player ${currentPlayer} wins!`;
+                setTimeout(restartGame, 5000); // Restart after 5 seconds
+            } else if (checkDraw()) {
+                gameOver = true;
+                messageElement.textContent = 'It\'s a draw!';
+                setTimeout(restartGame, 5000); // Restart after 5 seconds
+            } else {
+                currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+                messageElement.textContent = `Player ${currentPlayer}'s turn`;
+            }
+        }
+    }
+
+    // Check for a winner
+    function checkWinner() {
+        const cells = document.getElementsByClassName('cell');
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertical
+            [0, 4, 8], [2, 4, 6]             // Diagonal
+        ];
+
+        return winningCombinations.some(combination =>
+            combination.every(index => cells[index].textContent === currentPlayer)
+        );
+    }
+
+    // Check for a draw
+    function checkDraw() {
+        const cells = document.getElementsByClassName('cell');
+        return Array.from(cells).every(cell => cell.textContent !== '');
+    }
+
+    // Function to restart the game
+    function restartGame() {
+        const cells = document.getElementsByClassName('cell');
+        for (const cell of cells) {
+            cell.textContent = '';
+        }
+        currentPlayer = 'X';
+        gameOver = false;
+        messageElement.textContent = 'Let\'s start a new game!';
+    }
+</script>
+
+</body>
+</html>
